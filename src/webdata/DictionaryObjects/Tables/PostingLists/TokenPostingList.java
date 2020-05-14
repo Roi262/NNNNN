@@ -2,7 +2,12 @@ package webdata.DictionaryObjects.Tables.PostingLists;
 
 import java.util.ArrayList;
 
-public class TokenPostingList extends PostingList {
+public class TokenPostingList implements PostingList {
+
+    /**
+     * The list of only the review IDs
+     */
+    private ArrayList<Integer> postingList;
 
     /** The respective list of frequencies to the posting list,
      * i.e., a list of the number of appearances of the token this list refers
@@ -11,12 +16,12 @@ public class TokenPostingList extends PostingList {
     private final ArrayList<Integer> frequencyList;
 
     public TokenPostingList() {
-        super();
+        this.postingList = new ArrayList<>();
         this.frequencyList = new ArrayList<>();
     }
 
     public void update(Integer reviewID, int freq){
-        super.update(reviewID);
+        postingList.add(reviewID);
         frequencyList.add(freq);
     }
 
@@ -25,9 +30,8 @@ public class TokenPostingList extends PostingList {
      * @return the delta compressed posting list with frequencies.
      * Overrides the method from Parent class, because parent doesn't deal with frequencies
      */
-    @Override
     public String getCompressedPostingList(){
-        updatePostingListToGaps();
+        postingList = updatePostingListToGaps(postingList);
         ArrayList<Integer> postingListWithFrequencies = postingList;
         postingListWithFrequencies.addAll(frequencyList);
         return DeltaPostingListCompressor.compressList(postingListWithFrequencies);

@@ -1,6 +1,6 @@
 package webdata.DictionaryObjects.Tables;
 
-import webdata.DictionaryObjects.Tables.PostingLists.PostingList;
+import webdata.DictionaryObjects.Tables.PostingLists.PIDPostingList;
 import webdata.DictionaryObjects.Tables.PostingLists.TokenPostingList;
 import webdata.DictionaryObjects.Tables.Rows.Row;
 import webdata.Review;
@@ -63,14 +63,14 @@ public class FCTableToken extends FCTable  {
 
         StringBuilder concatStrBuilder = new StringBuilder();
 
-        PostingList PostingList;
+        PIDPostingList PIDPostingList;
 
         for (Map.Entry<String, TokenPostingList> entry : sortedTokensDict.entrySet()) {
             term = entry.getKey();
-            PostingList = entry.getValue();
+            PIDPostingList = entry.getValue();
 
 //            update serializable table
-            compressedPostingList = PostingList.getCompressedPostingList();
+            compressedPostingList = PIDPostingList.getCompressedPostingList();
             prefixSize = FCTable.getPrefixSize(previousKthTerm, term, rowIndex);
             Row row = getRow(rowIndex, compressedPostingList, term.length(), prefixSize, currTermPtr);
             serializableTable.add(row);

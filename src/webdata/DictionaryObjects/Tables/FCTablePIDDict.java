@@ -1,6 +1,6 @@
 package webdata.DictionaryObjects.Tables;
 
-import webdata.DictionaryObjects.Tables.PostingLists.PostingList;
+import webdata.DictionaryObjects.Tables.PostingLists.PIDPostingList;
 import webdata.DictionaryObjects.Tables.Rows.Row;
 import webdata.Review;
 
@@ -12,7 +12,7 @@ import static webdata.Constants.HyperParameters.k;
 
 public class FCTablePIDDict extends FCTable {
 
-    TreeMap<String, PostingList> sortedPIDDict; // sorted by key
+    TreeMap<String, PIDPostingList> sortedPIDDict; // sorted by key
 
 
     /*****************CONSTRUCTOR*****************/
@@ -25,9 +25,9 @@ public class FCTablePIDDict extends FCTable {
     @Override
     public void update(Review review) {
         String PID = review.getProductID();
-        PostingList PostingList = sortedPIDDict.getOrDefault(PID, new PostingList());
-        PostingList.update(review.getReviewID());
-        sortedPIDDict.put(PID, PostingList);
+        PIDPostingList PIDPostingList = sortedPIDDict.getOrDefault(PID, new PIDPostingList());
+        PIDPostingList.update(review.getReviewID());
+        sortedPIDDict.put(PID, PIDPostingList);
     }
 
 
@@ -44,14 +44,14 @@ public class FCTablePIDDict extends FCTable {
 
         StringBuilder concatStrBuilder = new StringBuilder();
 
-        PostingList PostingList;
+        PIDPostingList PIDPostingList;
 
-        for (Map.Entry<String, PostingList> entry : sortedPIDDict.entrySet()) {
+        for (Map.Entry<String, PIDPostingList> entry : sortedPIDDict.entrySet()) {
             term = entry.getKey();
-            PostingList = entry.getValue();
+            PIDPostingList = entry.getValue();
 
 //            update serializable table
-            compressedPostingList = PostingList.getCompressedPostingList();
+            compressedPostingList = PIDPostingList.getCompressedPostingList();
             prefixSize = FCTable.getPrefixSize(previousKthTerm, term, currIndex);
             Row row = getRow(currIndex, compressedPostingList, term.length(), prefixSize, currTermPtr);
             serializableTable.add(row);
