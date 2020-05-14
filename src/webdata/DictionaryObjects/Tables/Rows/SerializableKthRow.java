@@ -4,10 +4,12 @@ public class SerializableKthRow implements Row {
     //    private int freq;
     private String compressedBinaryStringPostingList;
     private int length;
+    private int termPtr;
 
-    public SerializableKthRow(String compressedBinaryStringPostingList, int length) {
+    public SerializableKthRow(String compressedBinaryStringPostingList, int length, int termPtr) {
         this.compressedBinaryStringPostingList = compressedBinaryStringPostingList;
         this.length = length;
+        this.termPtr = termPtr;
     }
 
     @Override

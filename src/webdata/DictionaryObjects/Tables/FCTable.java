@@ -40,10 +40,10 @@ public abstract class FCTable implements DictionaryObject {
     /**
      * @return Row object pertaining to type of row
      */
-    protected Row getRow(int currIndex, String compressedBinaryStringPostingList, int length, int prefixSize) {
+    protected Row getRow(int currIndex, String compressedBinaryStringPostingList, int length, int prefixSize, int termPointer) {
         switch (currIndex % k) {
             case 0: //Kth row
-                return new SerializableKthRow(compressedBinaryStringPostingList, length);
+                return new SerializableKthRow(compressedBinaryStringPostingList, length, termPointer);
             case k - 1: //last row in block
                 return new SerializableLastRowInBlock(compressedBinaryStringPostingList, prefixSize);
             default: //any middle row
@@ -55,8 +55,8 @@ public abstract class FCTable implements DictionaryObject {
     /**
      * @return the prefix size
      */
-    protected static int getPrefixSize(String previousKthTerm, String term, int currIndex) {
-        if (currIndex % k == 0) { // irrelevant if currIndex is a kth index
+    protected static int getPrefixSize(String previousKthTerm, String term, int rowIndex) {
+        if (rowIndex % k == 0) { // irrelevant if rowIndex is a kth index
             return -1;
         }
         int i = 0;

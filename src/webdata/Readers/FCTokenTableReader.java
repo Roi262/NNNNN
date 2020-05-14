@@ -68,7 +68,8 @@ public class FCTokenTableReader {
     private void updateCurrPostingListAndFrequencies(String token){
         int rowInd = findRowIndex(token);
         Row row = table.get(rowInd);
-        ArrayList<Integer> pList = deltaDecode(row.getCompressedBinaryStringPostingList());
+        String compressedList = row.getCompressedBinaryStringPostingList();
+        ArrayList<Integer> pList = deltaDecode(compressedList);
         assert pList.size() % 2 == 0;
         currReviewIDs = resetValuesFromGaps(new ArrayList<>(pList.subList(0, pList.size()/2)));
         currFrequencies = new ArrayList<>(pList.subList(pList.size()/2, pList.size()));
@@ -101,6 +102,7 @@ public class FCTokenTableReader {
      */
     private int findRowIndex(String token) {
         int numOfTermPointers = table.size() / k;
+
         int currTermPointerIndex = numOfTermPointers / 2; // the i'th term pointer
         int currIndex = currTermPointerIndex * k; // the index the i'th term pointer points to in the long string
 //        int nextTermPtrIndex = currIndex + k;

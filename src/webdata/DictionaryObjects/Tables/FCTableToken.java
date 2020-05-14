@@ -52,11 +52,10 @@ public class FCTableToken extends FCTable  {
 
     @Override
     public void compressAndCreate() {
-        int currIndex = 0;
+        int rowIndex = 0; // index of row in table
         int prefixSize;
         int currTermPtr = 0;
 
-        String previousTerm = null;
         String previousKthTerm = null;
         String term;
         String croppedTerm;
@@ -72,8 +71,8 @@ public class FCTableToken extends FCTable  {
 
 //            update serializable table
             compressedPostingList = PostingList.getCompressedPostingList();
-            prefixSize = FCTable.getPrefixSize(previousKthTerm, term, currIndex);
-            Row row = getRow(currIndex, compressedPostingList, term.length(), prefixSize);
+            prefixSize = FCTable.getPrefixSize(previousKthTerm, term, rowIndex);
+            Row row = getRow(rowIndex, compressedPostingList, term.length(), prefixSize, currTermPtr);
             serializableTable.add(row);
 
 //            update the long string
@@ -81,11 +80,11 @@ public class FCTableToken extends FCTable  {
             concatStrBuilder.append(croppedTerm);
 
 //            update for next iteration
-            if (currIndex % k == 0){
+            if (rowIndex % k == 0){
                 previousKthTerm = term;
             }
             currTermPtr += croppedTerm.length();
-            currIndex++;
+            rowIndex++;
         }
         compressedStringDict = concatStrBuilder.toString();
     }
