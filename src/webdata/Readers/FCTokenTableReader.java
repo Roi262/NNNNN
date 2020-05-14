@@ -101,18 +101,19 @@ public class FCTokenTableReader {
      */
     private int findRowIndex(String token) {
         int numOfRowsWithTermPointers = table.size() / k;
-
         int currKthRow = numOfRowsWithTermPointers / 2; // the i'th term pointer
+
         int currRowIndex = currKthRow * k;
 
         SerializableKthRow kTermRow = (SerializableKthRow) table.get(currRowIndex);
-
         int currTermPtrValue = kTermRow.getTermPtr();
 
         int termLength = kTermRow.getLength();
         String currKTerm = allTermString.substring(currTermPtrValue, currTermPtrValue + termLength);
 
         while (currRowIndex + k < allTermString.length()) {
+
+
             int offset = wordInBlock(currRowIndex, token, currKTerm, currTermPtrValue);
             if (offset >= 0) {
                 return currRowIndex + offset;
@@ -123,9 +124,17 @@ public class FCTokenTableReader {
                 currKthRow += currKthRow / 2;
             }
             currRowIndex = currKthRow * k;
+            kTermRow = (SerializableKthRow) table.get(currRowIndex);
+            currTermPtrValue = kTermRow.getTermPtr();
+            termLength = kTermRow.getLength();
+            currKTerm = allTermString.substring(currTermPtrValue, currTermPtrValue + termLength);
         }
         throw new NoSuchElementException();
+
+
     }
+
+
 
     /**
      * @param KthRowIndex
