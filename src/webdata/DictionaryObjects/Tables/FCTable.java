@@ -55,12 +55,12 @@ public abstract class FCTable implements DictionaryObject {
     /**
      * @return the prefix size
      */
-    protected static int getPrefixSize(String previousTerm, String term, int currIndex) {
+    protected static int getPrefixSize(String previousKthTerm, String term, int currIndex) {
         if (currIndex % k == 0) { // irrelevant if currIndex is a kth index
             return -1;
         }
         int i = 0;
-        while (i < previousTerm.length() && i < term.length() && (previousTerm.charAt(i) == term.charAt(i))) i++;
+        while (i < previousKthTerm.length() && i < term.length() && (previousKthTerm.charAt(i) == term.charAt(i))) i++;
         return i;
     }
 
@@ -73,7 +73,8 @@ public abstract class FCTable implements DictionaryObject {
         if (prefixSize != -1) {
             String prefix = term.substring(0, prefixSize);
             assert prefix.length() == prefixSize : "Cropping string at wrong index.";
-            return term.replace(prefix, "");
+            term = term.substring(prefixSize);
+            return term;
         } else {
             return term;
         }

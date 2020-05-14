@@ -3,6 +3,8 @@ package webdata;
 import java.io.Serializable;
 
 public class TotalCounts implements Serializable {
+    public static final long getSerialversionUID = 1L;
+
     private int totalNumOfReviews;
     private int totalNumOfTokens;
 
@@ -24,5 +26,11 @@ public class TotalCounts implements Serializable {
 
     public int getTotalNumOfTokens() {
         return totalNumOfTokens;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuffer(this.totalNumOfReviews)
+                .append(this.totalNumOfTokens).toString();
     }
 }

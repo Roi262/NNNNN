@@ -18,13 +18,14 @@ public class Constants {
     }
 
     public static class IndexFilePaths {
-        public static final String FEATURES_DICT_PATH = "/Features_Dictionary";
-        public static final String TOTAL_COUNTS_PATHS = "/TC_Counts";
+        private static final String SER = ".ser";
+        public static final String FEATURES_DICT_PATH = "/Features_Dictionary" + SER;
+        public static final String TOTAL_COUNTS_PATHS = "/TC_Counts" + SER;
 
-        public static final String SERIALIZABLE_PROD_ID_TABLE_PATH = "/ProdID_Table";
-        public static final String COMPRESSED_PROD_ID_DICT_STRING_PATH = "/ProdID_Dictionary_String";
-        public static final String SERIALIZABLE_TOKEN_TABLE_PATH = "/Token_Table";
-        public static final String COMPRESSED_TOKEN_DICT_STRING_PATH = "/Token_Dictionary_String";
+        public static final String SERIALIZABLE_PROD_ID_TABLE_PATH = "/ProdID_Table" + SER;
+        public static final String COMPRESSED_PROD_ID_DICT_STRING_PATH = "/ProdID_Dictionary_String" + SER;
+        public static final String SERIALIZABLE_TOKEN_TABLE_PATH = "/Token_Table" + SER;
+        public static final String COMPRESSED_TOKEN_DICT_STRING_PATH = "/Token_Dictionary_String" + SER;
     }
 
 

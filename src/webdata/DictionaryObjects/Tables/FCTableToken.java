@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static webdata.Constants.HyperParameters.k;
+
 public class FCTableToken extends FCTable  {
 
     TreeMap<String, TokenPostingList> sortedTokensDict; // sorted by key
@@ -55,6 +57,7 @@ public class FCTableToken extends FCTable  {
         int currTermPtr = 0;
 
         String previousTerm = null;
+        String previousKthTerm = null;
         String term;
         String croppedTerm;
         String compressedPostingList;
@@ -69,7 +72,7 @@ public class FCTableToken extends FCTable  {
 
 //            update serializable table
             compressedPostingList = PostingList.getCompressedPostingList();
-            prefixSize = FCTable.getPrefixSize(previousTerm, term, currIndex);
+            prefixSize = FCTable.getPrefixSize(previousKthTerm, term, currIndex);
             Row row = getRow(currIndex, compressedPostingList, term.length(), prefixSize);
             serializableTable.add(row);
 
@@ -78,7 +81,9 @@ public class FCTableToken extends FCTable  {
             concatStrBuilder.append(croppedTerm);
 
 //            update for next iteration
-            previousTerm = term;
+            if (currIndex % k == 0){
+                previousKthTerm = term;
+            }
             currTermPtr += croppedTerm.length();
             currIndex++;
         }
