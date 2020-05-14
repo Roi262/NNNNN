@@ -26,6 +26,7 @@ public class PIDPostingList implements PostingList {
 //        postingList.addAll(reviewIDs);
 //    }
 
+    @Override
     public String getCompressedPostingList() {
         postingList = updatePostingListToGaps(postingList);
         return DeltaPostingListCompressor.compressList(postingList);

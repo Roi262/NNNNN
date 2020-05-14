@@ -30,6 +30,7 @@ public class TokenPostingList implements PostingList {
      * @return the delta compressed posting list with frequencies.
      * Overrides the method from Parent class, because parent doesn't deal with frequencies
      */
+    @Override
     public String getCompressedPostingList(){
         postingList = updatePostingListToGaps(postingList);
         ArrayList<Integer> postingListWithFrequencies = postingList;

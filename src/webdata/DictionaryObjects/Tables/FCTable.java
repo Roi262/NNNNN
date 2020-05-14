@@ -1,16 +1,22 @@
 package webdata.DictionaryObjects.Tables;
 
 import webdata.DictionaryObjects.DictionaryObject;
+import webdata.DictionaryObjects.Tables.PostingLists.PIDPostingList;
+import webdata.DictionaryObjects.Tables.PostingLists.PostingList;
 import webdata.DictionaryObjects.Tables.Rows.Row;
 import webdata.DictionaryObjects.Tables.Rows.SerializableKthRow;
 import webdata.DictionaryObjects.Tables.Rows.SerializableLastRowInBlock;
 import webdata.DictionaryObjects.Tables.Rows.SerializableMidRow;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static webdata.Constants.HyperParameters.k;
 
 public abstract class FCTable implements DictionaryObject {
+
+    TreeMap<String, PostingList> sortedDict; // sorted by key
 
 
     /*****************Compressed Table Objects*****************/
@@ -35,7 +41,47 @@ public abstract class FCTable implements DictionaryObject {
 
     /***********************************************/
 
-    public abstract void compressAndCreate();
+
+    public void compressAndCreate() {
+        int currIndex = 0;
+        int prefixSize;
+        int currTermPtr = 0;
+
+        String previousKthTerm = null;
+        String term;
+        String croppedTerm;
+        String compressedPostingList;
+
+        StringBuilder concatStrBuilder = new StringBuilder();
+
+        PostingList postingList;
+
+        for (Map.Entry<String, PostingList> entry : sortedDict.entrySet()) {
+            term = entry.getKey();
+            postingList = entry.getValue();
+
+//            update serializable table
+            compressedPostingList = postingList.getCompressedPostingList();
+            prefixSize = FCTable.getPrefixSize(previousKthTerm, term, currIndex);
+            Row row = getRow(currIndex, compressedPostingList, term.length(), prefixSize, currTermPtr);
+            serializableTable.add(row);
+
+//            update the long string
+            croppedTerm = FCTable.cropTerm(prefixSize, term);
+            concatStrBuilder.append(croppedTerm);
+
+//            update for next iteration
+            if (currIndex % k == 0){
+                previousKthTerm = term;
+            }
+            currTermPtr += croppedTerm.length();
+            currIndex++;
+        }
+        compressedStringDict = concatStrBuilder.toString();
+    }
+
+
+
 
     /**
      * @return Row object pertaining to type of row
