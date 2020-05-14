@@ -34,7 +34,7 @@ public class FCTokenTableReader {
         Row row = table.get(rowInd);
         ArrayList<Integer> pList = deltaDecode(row.getCompressedBinaryStringPostingList());
         assert pList.size() % 2 == 0;
-        return pList.size()/2;
+        return pList.size() / 2;
     }
 
     /**
@@ -45,7 +45,7 @@ public class FCTokenTableReader {
     public int getTokenCollectionFrequency(String token) {
         updateCurrPostingListAndFrequencies(token);
         int totalFreq = 0;
-        for (Integer freq: currFrequencies){
+        for (Integer freq : currFrequencies) {
             totalFreq += freq;
         }
         return totalFreq;
@@ -65,19 +65,19 @@ public class FCTokenTableReader {
         return Collections.enumeration(mergedPList(currReviewIDs, currFrequencies));
     }
 
-    private void updateCurrPostingListAndFrequencies(String token){
+    private void updateCurrPostingListAndFrequencies(String token) {
         int rowInd = findRowIndex(token);
         Row row = table.get(rowInd);
         String compressedList = row.getCompressedBinaryStringPostingList();
         ArrayList<Integer> pList = deltaDecode(compressedList);
         assert pList.size() % 2 == 0;
-        currReviewIDs = resetValuesFromGaps(new ArrayList<>(pList.subList(0, pList.size()/2)));
-        currFrequencies = new ArrayList<>(pList.subList(pList.size()/2, pList.size()));
+        currReviewIDs = resetValuesFromGaps(new ArrayList<>(pList.subList(0, pList.size() / 2)));
+        currFrequencies = new ArrayList<>(pList.subList(pList.size() / 2, pList.size()));
     }
 
-    private ArrayList<Integer> resetValuesFromGaps(ArrayList<Integer> pList){
+    private ArrayList<Integer> resetValuesFromGaps(ArrayList<Integer> pList) {
         int prevValue = 0;
-        for (int i=0; i < pList.size(); i++){
+        for (int i = 0; i < pList.size(); i++) {
             int realValue = prevValue + pList.get(i);
             pList.set(i, realValue);
             prevValue = realValue;
@@ -85,10 +85,10 @@ public class FCTokenTableReader {
         return pList;
     }
 
-    private ArrayList<Integer> mergedPList(ArrayList<Integer> reviewIDs, ArrayList<Integer> frequencies){
+    private ArrayList<Integer> mergedPList(ArrayList<Integer> reviewIDs, ArrayList<Integer> frequencies) {
         assert reviewIDs.size() == frequencies.size();
         ArrayList<Integer> mergedPList = new ArrayList<>();
-        for (int i=0; i < reviewIDs.size(); i++){
+        for (int i = 0; i < reviewIDs.size(); i++) {
             mergedPList.add(reviewIDs.get(i));
             mergedPList.add(frequencies.get(i));
         }
@@ -96,66 +96,66 @@ public class FCTokenTableReader {
     }
 
     /**
-     *
      * @param token
      * @return the index of the row in the table that matches the given token
      */
     private int findRowIndex(String token) {
-        int numOfTermPointers = table.size() / k;
+        int numOfRowsWithTermPointers = table.size() / k;
 
-        int currTermPointerIndex = numOfTermPointers / 2; // the i'th term pointer
-        int currIndex = currTermPointerIndex * k; // the index the i'th term pointer points to in the long string
-//        int nextTermPtrIndex = currIndex + k;
-        SerializableKthRow kTermRow = (SerializableKthRow) table.get(currIndex);
+        int currKthRow = numOfRowsWithTermPointers / 2; // the i'th term pointer
+        int currRowIndex = currKthRow * k;
+
+        SerializableKthRow kTermRow = (SerializableKthRow) table.get(currRowIndex);
+
+        int currTermPtrValue = kTermRow.getTermPtr();
+
         int termLength = kTermRow.getLength();
-        String currKTerm = allTermString.substring(currIndex, currIndex + termLength);
+        String currKTerm = allTermString.substring(currTermPtrValue, currTermPtrValue + termLength);
 
-        while (currIndex + k < allTermString.length()) {
-            int offset = wordInBlock(currIndex, token, currKTerm);
+        while (currRowIndex + k < allTermString.length()) {
+            int offset = wordInBlock(currRowIndex, token, currKTerm, currTermPtrValue);
             if (offset >= 0) {
-                return currIndex + offset;
+                return currRowIndex + offset;
             }
             if (offset == SMALLER) {
-                currTermPointerIndex /= 2;
+                currKthRow /= 2;
             } else if (offset == LARGER) {
-                currTermPointerIndex += currTermPointerIndex / 2;
+                currKthRow += currKthRow / 2;
             }
-            currIndex = currTermPointerIndex * k;
+            currRowIndex = currKthRow * k;
         }
         throw new NoSuchElementException();
     }
 
     /**
-     * @param termPtr
+     * @param KthRowIndex
      * @param token
-     * @return index of offset in block if word is in K block else smaller or larger (lexicographic) than the words in the block
+     * @return index of offset in block if word is in K block
+     * else smaller or larger (lexicographic) than the words in the block
      */
-    private int wordInBlock(int termPtr, String token, String KTerm) {
-        int nextTermPtr = termPtr + k;
-        if (KTerm.equals(token)) {
-            return 0;
-        }
-        if (token.compareTo(KTerm) < 0) {
-            return SMALLER;
-        }
+    private int wordInBlock(int KthRowIndex, String token, String KTerm, int currTermPtrValue) {
 
-        int strPtr = KTerm.length();
-        int rowLength;
+        if (KTerm.equals(token)) return 0;
+        if (token.compareTo(KTerm) < 0) return SMALLER;
+
+        int nextKthRowIndex = KthRowIndex + k;
+        int currStrPtr = currTermPtrValue + KTerm.length();
+        int currTermLength;
         Row row;
         for (int i = 1; i < k; i++) {
-            row = table.get(termPtr + i);
-            if (i == k-1){
-                rowLength = nextTermPtr - strPtr;
-            } else{
-                rowLength = row.getLength();
+            row = table.get(KthRowIndex + i);
+            if (i == k - 1) {
+                currTermLength = ((SerializableKthRow) table.get(nextKthRowIndex)).getTermPtr() - currStrPtr;
+            } else {
+                currTermLength = row.getLength();
             }
             String prefix = KTerm.substring(0, row.getPrefixSize());
-            int suffixLength = rowLength - row.getPrefixSize();
-            String suffix = allTermString.substring(strPtr, suffixLength);
+            int suffixLength = currTermLength - row.getPrefixSize();
+            String suffix = allTermString.substring(currStrPtr, suffixLength);
             if (token.equals(prefix + suffix)) {
                 return i;
             }
-            strPtr += suffixLength;
+            currStrPtr += currTermLength;
         }
         return LARGER;
     }

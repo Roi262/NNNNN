@@ -53,7 +53,7 @@ public class FCTablePIDDict extends FCTable {
 //            update serializable table
             compressedPostingList = PostingList.getCompressedPostingList();
             prefixSize = FCTable.getPrefixSize(previousKthTerm, term, currIndex);
-            Row row = getRow(currIndex, compressedPostingList, term.length(), prefixSize);
+            Row row = getRow(currIndex, compressedPostingList, term.length(), prefixSize, currTermPtr);
             serializableTable.add(row);
 
 //            update the long string

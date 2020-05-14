@@ -22,6 +22,10 @@ public class SerializableKthRow implements Row {
         return length;
     }
 
+    public int getTermPtr() {
+        return termPtr;
+    }
+
     @Override
     public int getPrefixSize() {
         return -1;
