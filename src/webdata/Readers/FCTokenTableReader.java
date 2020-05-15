@@ -112,15 +112,17 @@ public class FCTokenTableReader {
      */
     private int findRowIndex(String token) {
 
-        int currRowIndex;// = currKthRow * k;
-        SerializableKthRow kTermRow;// = (SerializableKthRow) table.get(currRowIndex);
-        int currTermPtrValue;// = kTermRow.getTermPtr();
-        int termLength;// = kTermRow.getLength();
-        String currKTerm;// = allTermString.substring(currTermPtrValue, currTermPtrValue + termLength);
+        int currRowIndex;
+        SerializableKthRow kTermRow;
+        int currTermPtrValue;
+        int termLength;
+        String currKTerm;
 
         int numOfRowsWithTermPointers = (table.size() + k - 1) / k;
         int currKthRow = (numOfRowsWithTermPointers / 2) - 1; // the i'th term pointer
         int logLimit = (int) Math.log(numOfRowsWithTermPointers) + 1;
+        int currKRowsLowerBound = 0;
+        int currKRowsUpperBound = numOfRowsWithTermPointers;
 
         do {
             currRowIndex = currKthRow * k;
@@ -128,28 +130,19 @@ public class FCTokenTableReader {
             currTermPtrValue = kTermRow.getTermPtr();
             termLength = kTermRow.getLength();
             currKTerm = allTermString.substring(currTermPtrValue, currTermPtrValue + termLength);
-
             int offset = wordInBlock(currRowIndex, token, currKTerm, currTermPtrValue);
             if (offset >= 0) {
                 return currRowIndex + offset;
             }
             if (offset == SMALLER) {
-                if (currKthRow == currKthRow/2){
-                    return -1; //i.e. NOT IN DATA BASE TODO DO THIS FOR LARGER ALSO
-                }
-                currKthRow /= 2;
+                currKRowsUpperBound = currKthRow;
             } else if (offset == LARGER) {
-                if (currKthRow == 0) currKthRow++;
-                else{
-                    currKthRow += currKthRow / 2;
-                }
+                currKRowsLowerBound = currKthRow;
             }
+            currKthRow = (currKRowsLowerBound + currKRowsUpperBound) /2;
             logLimit--;
         }
         while(logLimit >= 0);
-//        throw new NoSuchElementException();
-
-//        System.out.println("The word '" + token + "' is not in the database");
         return -1;
     }
 
@@ -171,9 +164,15 @@ public class FCTokenTableReader {
         int currTermLength;
         Row row;
         for (int i = 1; i < k; i++) {
+            if (KthRowIndex + i >= table.size()){
+                return LARGER; // this case it does larger until runs out of tries
+            }
             row = table.get(KthRowIndex + i);
             String prefix = KTerm.substring(0, row.getPrefixSize());
             if (i == k - 1) {
+                if (nextKthRowIndex >= table.size()){
+                    return LARGER; // this case it does larger until runs out of tries
+                }
                 int nextKthRowIndexTermPtrValue = ((SerializableKthRow) table.get(nextKthRowIndex)).getTermPtr();
                 currTermLength = nextKthRowIndexTermPtrValue - currStrPtr + row.getPrefixSize();
             } else {
