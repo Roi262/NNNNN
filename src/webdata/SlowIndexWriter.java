@@ -86,7 +86,7 @@ public class SlowIndexWriter {
      */
     private void readAllReviews() throws IOException {
 //        read review into new review object
-        int reviewID = 0;
+        int reviewID = 1;
         Review review;
         while (true) {
             review = readNextReview(reviewID);
@@ -109,11 +109,16 @@ public class SlowIndexWriter {
         if (line == null) return null;
 
         while (!line.equals("")) {
-            if (!unnecessaryValue(line)) reviewLines.add(line);
+            if (!unnecessaryValue(line)){
+                reviewLines.add(line);
+            }
 
             line = reader.readLine();
 
             if (line == null) break;
+        }
+        if (reviewLines.isEmpty()){
+            return null;
         }
         return new Review(reviewID, reviewLines);
     }

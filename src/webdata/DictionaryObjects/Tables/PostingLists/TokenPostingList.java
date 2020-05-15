@@ -38,4 +38,17 @@ public class TokenPostingList implements PostingList {
         return DeltaPostingListCompressor.compressList(postingListWithFrequencies);
     }
 
+    /**
+     * calculate frequency by counting all values of odd indeces in the posting list
+     * TODO note - i think this is just for reading
+     * @return
+     */
+    public static int getFreq(ArrayList<Integer> frequencyList) {
+        int freq = 0;
+        for (int i = 0; i < frequencyList.size(); i++) {
+            freq += frequencyList.get(i);
+        }
+        return freq;
+    }
+
 }

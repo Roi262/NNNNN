@@ -110,7 +110,11 @@ public class IndexReader {
      * Returns 0 if there are no reviews containing this token
      */
     public int getTokenFrequency(String token) {
-        return fcTokenTableReader.getTokenFrequency(token);
+        int freq = fcTokenTableReader.getTokenFrequency(token);
+        if (freq == -1){
+            System.out.println("The word '" + token + "' is not in the database");
+        }
+        return freq;
     }
 
     /**

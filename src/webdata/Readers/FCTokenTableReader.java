@@ -3,6 +3,8 @@ package webdata.Readers;
 import webdata.DictionaryObjects.Tables.Rows.Row;
 import webdata.DictionaryObjects.Tables.Rows.*;
 
+import javax.sound.midi.MidiFileFormat;
+import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -31,6 +33,10 @@ public class FCTokenTableReader {
      */
     public int getTokenFrequency(String token) {
         int rowInd = findRowIndex(token);
+        if (rowInd == -1) {
+            System.out.println("The word '" + token + "' is not in the database");
+            return 0;
+        }
         Row row = table.get(rowInd);
         ArrayList<Integer> pList = deltaDecode(row.getCompressedBinaryStringPostingList());
         assert pList.size() % 2 == 0;
@@ -61,18 +67,23 @@ public class FCTokenTableReader {
      * Returns an empty Enumeration if there are no reviews containing this token
      */
     public Enumeration<Integer> getReviewsWithToken(String token) {
-        updateCurrPostingListAndFrequencies(token);
+        if (updateCurrPostingListAndFrequencies(token) == -1){
+            System.out.println("The word '" + token + "' is not in the database");
+            return null;
+        }
         return Collections.enumeration(mergedPList(currReviewIDs, currFrequencies));
     }
 
-    private void updateCurrPostingListAndFrequencies(String token) {
+    private int updateCurrPostingListAndFrequencies(String token) {
         int rowInd = findRowIndex(token);
+        if(rowInd == -1) return -1;
         Row row = table.get(rowInd);
         String compressedList = row.getCompressedBinaryStringPostingList();
         ArrayList<Integer> pList = deltaDecode(compressedList);
         assert pList.size() % 2 == 0;
         currReviewIDs = resetValuesFromGaps(new ArrayList<>(pList.subList(0, pList.size() / 2)));
         currFrequencies = new ArrayList<>(pList.subList(pList.size() / 2, pList.size()));
+        return 0;
     }
 
     private ArrayList<Integer> resetValuesFromGaps(ArrayList<Integer> pList) {
@@ -109,6 +120,7 @@ public class FCTokenTableReader {
 
         int numOfRowsWithTermPointers = (table.size() + k - 1) / k;
         int currKthRow = (numOfRowsWithTermPointers / 2) - 1; // the i'th term pointer
+        int logLimit = (int) Math.log(numOfRowsWithTermPointers) + 1;
 
         do {
             currRowIndex = currKthRow * k;
@@ -122,15 +134,23 @@ public class FCTokenTableReader {
                 return currRowIndex + offset;
             }
             if (offset == SMALLER) {
-                if (currKthRow == currKthRow/2) return -1; //i.e. NOT IN DATA BASE TODO DO THIS FOR LARGER ALSO
+                if (currKthRow == currKthRow/2){
+                    return -1; //i.e. NOT IN DATA BASE TODO DO THIS FOR LARGER ALSO
+                }
                 currKthRow /= 2;
             } else if (offset == LARGER) {
-                currKthRow += currKthRow / 2;
+                if (currKthRow == 0) currKthRow++;
+                else{
+                    currKthRow += currKthRow / 2;
+                }
             }
+            logLimit--;
         }
-        while (currRowIndex + k < allTermString.length());
+        while(logLimit >= 0);
+//        throw new NoSuchElementException();
 
-        throw new NoSuchElementException();
+//        System.out.println("The word '" + token + "' is not in the database");
+        return -1;
     }
 
 
@@ -152,18 +172,19 @@ public class FCTokenTableReader {
         Row row;
         for (int i = 1; i < k; i++) {
             row = table.get(KthRowIndex + i);
+            String prefix = KTerm.substring(0, row.getPrefixSize());
             if (i == k - 1) {
-                currTermLength = ((SerializableKthRow) table.get(nextKthRowIndex)).getTermPtr() - currStrPtr;
+                int nextKthRowIndexTermPtrValue = ((SerializableKthRow) table.get(nextKthRowIndex)).getTermPtr();
+                currTermLength = nextKthRowIndexTermPtrValue - currStrPtr + row.getPrefixSize();
             } else {
                 currTermLength = row.getLength();
             }
-            String prefix = KTerm.substring(0, row.getPrefixSize());
             int suffixLength = currTermLength - row.getPrefixSize();
-            String suffix = allTermString.substring(currStrPtr, suffixLength);
+            String suffix = allTermString.substring(currStrPtr, currStrPtr + suffixLength);
             if (token.equals(prefix + suffix)) {
                 return i;
             }
-            currStrPtr += currTermLength;
+            currStrPtr += suffixLength;
         }
         return LARGER;
     }

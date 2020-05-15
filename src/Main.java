@@ -74,7 +74,7 @@ public class Main {
 
     private static void queryWordIndex(String indicesDir) throws IOException, ClassNotFoundException {
         IndexReader indexReader = new IndexReader();
-        String[] wordTestCases = {"0, jezer, roi"};
+        String[] wordTestCases = {"0", "jezer", "roi"};
 //        String[] wordTestCases = {"0", "bulba", "zzz", "1", "9oz", "a", "crunchy", "how", "laxative",
 //                "prefer", "storebought", "zucchini", "the"};
         testGetReviewsWithToken(indexReader, wordTestCases);
@@ -92,6 +92,7 @@ public class Main {
         System.out.println("Checking getReviewsWithToken...");
         for (String word : wordTestCases) {
             Enumeration<Integer> res = indexReader.getReviewsWithToken(word);
+            if (res == null) continue;
             System.out.print(word + ": " + System.lineSeparator());
             while (res.hasMoreElements()) {
                 System.out.print(res.nextElement().toString() + " ");
