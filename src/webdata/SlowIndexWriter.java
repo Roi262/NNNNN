@@ -113,7 +113,7 @@ public class SlowIndexWriter {
 
             line = reader.readLine();
 
-            if (line == null) return null;
+            if (line == null) break;
         }
         return new Review(reviewID, reviewLines);
     }

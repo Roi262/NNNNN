@@ -38,6 +38,7 @@ public class FCTableToken extends FCTable  {
             String token = entry.getKey();
             if (token.equals("")) continue;
 
+
             TokenPostingList tokenPostingList = (TokenPostingList) sortedDict.getOrDefault(token, new TokenPostingList());
             tokenPostingList.update(review.getReviewID(), entry.getValue());
             sortedDict.put(token, tokenPostingList);

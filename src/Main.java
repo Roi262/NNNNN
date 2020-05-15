@@ -1,4 +1,5 @@
 import webdata.IndexReader;
+import webdata.Serializer;
 import webdata.SlowIndexWriter;
 
 import java.io.File;
@@ -10,7 +11,8 @@ import static webdata.Constants.PrefixConstants.*;
 public class Main {
 
     static final String INDICES_DIR_NAME = "indices";
-    static final String REVIEWS_FILE_NAME_10 = "10.txt";
+    static final String REVIEWS_FILE_NAME_1 = "Small Datasets/1.txt";
+    static final String REVIEWS_FILE_NAME_10 = "Small Datasets/10.txt";
     static final String REVIEWS_FILE_NAME_100 = "Small Datasets/100.txt";
     static final String REVIEWS_FILE_NAME_1000 = "Small Datasets/1000.txt";
 
@@ -23,6 +25,8 @@ public class Main {
 //        queryMetaData(indicesDir);
 //        queryReviewMetaData(indicesDir);
 
+//        queryConcatDictTester(indicesDir);
+
         queryWordIndex(indicesDir);
 
 //        queryProductIndex(indicesDir);
@@ -33,8 +37,16 @@ public class Main {
 
     private static void buildIndex(String indicesDir) throws Exception {
         SlowIndexWriter slowIndexWriter = new SlowIndexWriter();
-        slowIndexWriter.slowWrite(REVIEWS_FILE_NAME_1000, indicesDir);
+        slowIndexWriter.slowWrite(REVIEWS_FILE_NAME_1, indicesDir);
+//        slowIndexWriter.slowWrite(REVIEWS_FILE_NAME_1000, indicesDir);
     }
+
+//    private static void queryConcatDictTester(String indicesDir) throws IOException, ClassNotFoundException {
+//        IndexReader indexReader = new IndexReader();
+//
+//        Serializer.WriteObjectToFile();
+//
+//    }
 
 
     private static void queryMetaData(String indicesDir) throws IOException, ClassNotFoundException {
@@ -70,6 +82,8 @@ public class Main {
         testGetTokenCollectionFrequency(indexReader, wordTestCases);
 
     }
+
+
 
 
     private static void testGetReviewsWithToken(IndexReader indexReader,

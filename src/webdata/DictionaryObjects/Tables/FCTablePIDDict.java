@@ -18,7 +18,7 @@ public class FCTablePIDDict extends FCTable {
     @Override
     public void update(Review review) {
         String PID = review.getProductID();
-        PIDPostingList PIDPostingList = (webdata.DictionaryObjects.Tables.PostingLists.PIDPostingList) sortedDict.getOrDefault(PID, new PIDPostingList());
+        PIDPostingList PIDPostingList = (PIDPostingList) sortedDict.getOrDefault(PID, new PIDPostingList());
         PIDPostingList.update(review.getReviewID());
         sortedDict.put(PID, PIDPostingList);
     }

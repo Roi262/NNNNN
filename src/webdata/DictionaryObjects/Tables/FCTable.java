@@ -26,7 +26,9 @@ public abstract class FCTable implements DictionaryObject {
 
     /*****************CONSTRUCTOR*****************/
     public FCTable() {
+        this.sortedDict = new TreeMap<>();
         this.serializableTable = new ArrayList<>();
+
     }
 
     /*****************GETTERS**********************/
@@ -71,9 +73,9 @@ public abstract class FCTable implements DictionaryObject {
             concatStrBuilder.append(croppedTerm);
 
 //            update for next iteration
-            if (currIndex % k == 0){
-                previousKthTerm = term;
-            }
+//            if (currIndex % k == 0){
+//            }
+            previousKthTerm = term;
             currTermPtr += croppedTerm.length();
             currIndex++;
         }
