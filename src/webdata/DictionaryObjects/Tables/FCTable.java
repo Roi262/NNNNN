@@ -73,8 +73,6 @@ public abstract class FCTable implements DictionaryObject {
             concatStrBuilder.append(croppedTerm);
 
 //            update for next iteration
-//            if (currIndex % k == 0){
-//            }
             previousKthTerm = term;
             currTermPtr += croppedTerm.length();
             currIndex++;

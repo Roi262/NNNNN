@@ -107,8 +107,8 @@ public class FCTokenTableReader {
         int termLength;// = kTermRow.getLength();
         String currKTerm;// = allTermString.substring(currTermPtrValue, currTermPtrValue + termLength);
 
-        int numOfRowsWithTermPointers = table.size() / k;
-        int currKthRow = numOfRowsWithTermPointers / 2; // the i'th term pointer
+        int numOfRowsWithTermPointers = (table.size() + k - 1) / k;
+        int currKthRow = (numOfRowsWithTermPointers / 2) - 1; // the i'th term pointer
 
         do {
             currRowIndex = currKthRow * k;
@@ -122,6 +122,7 @@ public class FCTokenTableReader {
                 return currRowIndex + offset;
             }
             if (offset == SMALLER) {
+                if (currKthRow == currKthRow/2) return -1; //i.e. NOT IN DATA BASE TODO DO THIS FOR LARGER ALSO
                 currKthRow /= 2;
             } else if (offset == LARGER) {
                 currKthRow += currKthRow / 2;

@@ -74,8 +74,9 @@ public class Main {
 
     private static void queryWordIndex(String indicesDir) throws IOException, ClassNotFoundException {
         IndexReader indexReader = new IndexReader();
-        String[] wordTestCases = {"0", "bulba", "zzz", "1", "9oz", "a", "crunchy", "how", "laxative",
-                "prefer", "storebought", "zucchini", "the"};
+        String[] wordTestCases = {"0, jezer, roi"};
+//        String[] wordTestCases = {"0", "bulba", "zzz", "1", "9oz", "a", "crunchy", "how", "laxative",
+//                "prefer", "storebought", "zucchini", "the"};
         testGetReviewsWithToken(indexReader, wordTestCases);
 
         testGetTokenFrequency(indexReader, wordTestCases);
