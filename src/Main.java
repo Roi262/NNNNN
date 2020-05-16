@@ -27,9 +27,9 @@ public class Main {
 
 //        queryConcatDictTester(indicesDir);
 
-        queryWordIndex(indicesDir);
+//        queryWordIndex(indicesDir);
 
-//        queryProductIndex(indicesDir);
+        queryProductIndex(indicesDir);
 
         deleteIndex(indicesDir);
     }
@@ -37,16 +37,8 @@ public class Main {
 
     private static void buildIndex(String indicesDir) throws Exception {
         SlowIndexWriter slowIndexWriter = new SlowIndexWriter();
-//        slowIndexWriter.slowWrite(REVIEWS_FILE_NAME_1, indicesDir);
-        slowIndexWriter.slowWrite(REVIEWS_FILE_NAME_1000, indicesDir);
+        slowIndexWriter.slowWrite(REVIEWS_FILE_NAME_100, indicesDir);
     }
-
-//    private static void queryConcatDictTester(String indicesDir) throws IOException, ClassNotFoundException {
-//        IndexReader indexReader = new IndexReader();
-//
-//        Serializer.WriteObjectToFile();
-//
-//    }
 
 
     private static void queryMetaData(String indicesDir) throws IOException, ClassNotFoundException {
@@ -78,13 +70,9 @@ public class Main {
         String[] wordTestCases = {"0", "bulba", "zzz", "1", "9oz", "a", "crunchy", "how", "laxative",
                 "prefer", "storebought", "zucchini", "the"};
         testGetReviewsWithToken(indexReader, wordTestCases);
-//ii
         testGetTokenFrequency(indexReader, wordTestCases);
         testGetTokenCollectionFrequency(indexReader, wordTestCases);
-
     }
-
-
 
 
     private static void testGetReviewsWithToken(IndexReader indexReader,
@@ -123,19 +111,21 @@ public class Main {
 
 
 
-//    private static void queryProductIndex(String indicesDir) throws IOException, ClassNotFoundException {
-//        IndexReader indexReader = new IndexReader();
-//        String[] productTestCases = {"A009ASDF5", "B099ASDF5", "B0001PB9FE", "B0002567IW", "B000ER6YO0",
-//                "B000G6RYNE", "B006F2NYI2", "B009HINRX8", "B001E4KFG0"};
-//        for (String pid : productTestCases) {
-//            Enumeration<Integer> res = indexReader.getProductReviews(pid);
-//            System.out.print(pid + ": " + System.lineSeparator());
-//            while (res.hasMoreElements()) {
-//                System.out.print(res.nextElement().toString() + " ");
-//            }
-//            System.out.println();
-//        }
-//    }
+    private static void queryProductIndex(String indicesDir) throws IOException, ClassNotFoundException, NullPointerException {
+        IndexReader indexReader = new IndexReader();
+        String[] productTestCases = {"A009ASDF5", "B099ASDF5", "B0001PB9FE", "B0002567IW", "B000ER6YO0",
+                "B000G6RYNE", "B006F2NYI2", "B009HINRX8", "B001E4KFG0"};
+        for (String pid : productTestCases) {
+            Enumeration<Integer> res = indexReader.getProductReviews(pid);
+            if (res == null) continue;
+            System.out.print(pid + ": " + System.lineSeparator());
+
+            while (res.hasMoreElements()) {
+                System.out.print(res.nextElement().toString() + " ");
+            }
+            System.out.println();
+        }
+    }
 
     private static void deleteIndex(String indicesDir) {
         SlowIndexWriter slowIndexWriter = new SlowIndexWriter();

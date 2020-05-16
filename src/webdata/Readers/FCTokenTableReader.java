@@ -2,6 +2,7 @@ package webdata.Readers;
 
 import webdata.DictionaryObjects.Tables.Rows.Row;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -65,9 +66,6 @@ public class FCTokenTableReader {
      * Returns an empty Enumeration if there are no reviews containing this token
      */
     public Enumeration<Integer> getReviewsWithToken(String token) {
-        if (token.equals("the")){
-            int i = 0;
-        }
         if (updateCurrPostingListAndFrequencies(token) == -1) {
             System.out.println("The word '" + token + "' is not in the database");
             return null;
@@ -75,7 +73,22 @@ public class FCTokenTableReader {
         return Collections.enumeration(mergedPList(currReviewIDs, currFrequencies));
     }
 
-    private int updateCurrPostingListAndFrequencies(String token) {
+    public Enumeration<Integer> getProductReviews(String productId) throws IOException, ClassNotFoundException, NullPointerException {
+        int rowInd = findRowIndex(productId);
+        if (rowInd == -1) {
+            System.out.println("The product ID '" + productId + "' is not in the database");
+            return null;
+        }
+        Row row = table.get(rowInd);
+        String compressedList = row.getCompressedBinaryStringPostingList();
+        ArrayList<Integer> pList = deltaDecode(compressedList);
+        return Collections.enumeration(pList);
+    }
+
+
+
+
+        private int updateCurrPostingListAndFrequencies(String token) {
         int rowInd = findRowIndex(token);
         if (rowInd == -1) return -1;
         Row row = table.get(rowInd);
@@ -116,17 +129,13 @@ public class FCTokenTableReader {
         int currKthRowIndex;
 
         int numOfRowsWithTermPointers = (table.size() + k - 1) / k;
-        int currKthRow = (numOfRowsWithTermPointers / 2) - 1; // the i'th term pointer
-//        int logLimit = (int) Math.log(numOfRowsWithTermPointers) + 10;
-        int logLimit = (int) (Math.log(numOfRowsWithTermPointers) / Math.log(2)) + 1; //to get log in base 2
+        int currKthRow = (numOfRowsWithTermPointers / 2);// - 1; // the i'th term pointer
+        int logLimit = (int) (Math.log(numOfRowsWithTermPointers) / Math.log(2)) + 1; // = log_2(numofrowswithTPs)+1
         int currKRowsLowerBound = 0;
         int currKRowsUpperBound = numOfRowsWithTermPointers;
 
         do {
             currKthRowIndex = currKthRow * k;
-            if (token.equals("the")){
-                int i = 9;
-            }
             int offset = getOffsetInBlock(currKthRowIndex, token);
             if (offset >= 0) {
                 return currKthRowIndex + offset;
@@ -140,7 +149,6 @@ public class FCTokenTableReader {
             logLimit--;
         }
         while (logLimit >=0);
-//        while (currKRowsLowerBound != currKRowsUpperBound);
         return -1;
     }
 
@@ -158,6 +166,9 @@ public class FCTokenTableReader {
 
 
         for (int offset = 0; offset < k; offset++) {
+            if (currKthRowIndex + offset >= table.size()) {
+                return LARGER;
+            }
             word = getWord(currKthRowIndex, currStrPtr, offset, previousTerm);
             if (token.equals(word)) {
                 return offset;

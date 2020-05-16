@@ -8,6 +8,7 @@ import webdata.Readers.FCTokenTableReader;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.DoubleSummaryStatistics;
 import java.util.Enumeration;
 
 import static webdata.Constants.Features.*;
@@ -38,7 +39,6 @@ public class IndexReader {
     public IndexReader() throws IOException, ClassNotFoundException {
         this.featuresDict = (FeaturesDict) ReadObjectFromFile(dir + FEATURES_DICT_PATH);
         this.tc = (TotalCounts) ReadObjectFromFile(dir + TOTAL_COUNTS_PATHS);
-
         initializeFCTokenTableReader();
     }
 
@@ -138,12 +138,15 @@ public class IndexReader {
         return fcTokenTableReader.getReviewsWithToken(token);
     }
 
-//    /**
-//     * Return the ids of the reviews for a given product identifier
-//     * Note that the integers returned should be sorted by id
-//     * Returns an empty Enumeration if there are no reviews for this product
-//     */
-//    public Enumeration<Integer> getProductReviews(String productId) throws IOException, ClassNotFoundException {
-//
-//    }
+    /**
+     * Return the ids of the reviews for a given product identifier
+     * Note that the integers returned should be sorted by id
+     * Returns an empty Enumeration if there are no reviews for this product
+     */
+    public Enumeration<Integer> getProductReviews(String productId) throws IOException, ClassNotFoundException, NullPointerException {
+        ArrayList<Row> table = (ArrayList<Row>) ReadObjectFromFile(dir + SERIALIZABLE_PROD_ID_TABLE_PATH);
+        String allTermString = (String) ReadObjectFromFile(dir + COMPRESSED_PROD_ID_DICT_STRING_PATH);
+        FCTokenTableReader fcProdIDtableReader = new FCTokenTableReader(table, allTermString);
+        return fcProdIDtableReader.getProductReviews(productId);
+    }
 }
