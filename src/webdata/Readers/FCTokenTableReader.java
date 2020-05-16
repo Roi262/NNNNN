@@ -4,6 +4,7 @@ import webdata.DictionaryObjects.Tables.Rows.Row;
 import webdata.DictionaryObjects.Tables.Rows.*;
 
 import javax.sound.midi.MidiFileFormat;
+import javax.swing.text.StyleContext;
 import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,7 +68,7 @@ public class FCTokenTableReader {
      * Returns an empty Enumeration if there are no reviews containing this token
      */
     public Enumeration<Integer> getReviewsWithToken(String token) {
-        if (updateCurrPostingListAndFrequencies(token) == -1){
+        if (updateCurrPostingListAndFrequencies(token) == -1) {
             System.out.println("The word '" + token + "' is not in the database");
             return null;
         }
@@ -76,7 +77,7 @@ public class FCTokenTableReader {
 
     private int updateCurrPostingListAndFrequencies(String token) {
         int rowInd = findRowIndex(token);
-        if(rowInd == -1) return -1;
+        if (rowInd == -1) return -1;
         Row row = table.get(rowInd);
         String compressedList = row.getCompressedBinaryStringPostingList();
         ArrayList<Integer> pList = deltaDecode(compressedList);
@@ -112,11 +113,7 @@ public class FCTokenTableReader {
      */
     private int findRowIndex(String token) {
 
-        int currRowIndex;
-        SerializableKthRow kTermRow;
-        int currTermPtrValue;
-        int termLength;
-        String currKTerm;
+        int currKthRowIndex;
 
         int numOfRowsWithTermPointers = (table.size() + k - 1) / k;
         int currKthRow = (numOfRowsWithTermPointers / 2) - 1; // the i'th term pointer
@@ -125,66 +122,82 @@ public class FCTokenTableReader {
         int currKRowsUpperBound = numOfRowsWithTermPointers;
 
         do {
-            currRowIndex = currKthRow * k;
-            kTermRow = (SerializableKthRow) table.get(currRowIndex);
-            currTermPtrValue = kTermRow.getTermPtr();
-            termLength = kTermRow.getLength();
-            currKTerm = allTermString.substring(currTermPtrValue, currTermPtrValue + termLength);
-            int offset = wordInBlock(currRowIndex, token, currKTerm, currTermPtrValue);
+            currKthRowIndex = currKthRow * k;
+            int offset = getOffsetInBlock(currKthRowIndex, token);
             if (offset >= 0) {
-                return currRowIndex + offset;
+                return currKthRowIndex + offset;
             }
             if (offset == SMALLER) {
                 currKRowsUpperBound = currKthRow;
             } else if (offset == LARGER) {
                 currKRowsLowerBound = currKthRow;
             }
-            currKthRow = (currKRowsLowerBound + currKRowsUpperBound) /2;
+            currKthRow = (currKRowsLowerBound + currKRowsUpperBound) / 2;
             logLimit--;
         }
-        while(logLimit >= 0);
+        while (logLimit >= 0);
         return -1;
     }
 
 
+    private int getOffsetInBlock(int currKthRowIndex, String token) {
+        int currStrPtr = table.get(currKthRowIndex).getTermPtr();
 
-    /**
-     * @param KthRowIndex
-     * @param token
-     * @return index of offset in block if word is in K block
-     * else smaller or larger (lexicographic) than the words in the block
-     */
-    private int wordInBlock(int KthRowIndex, String token, String KTerm, int currTermPtrValue) {
+        if (token.compareTo(getWord(currKthRowIndex, currStrPtr, 0, null)) < 0){
+            return SMALLER;
+        }
 
-        if (KTerm.equals(token)) return 0;
-        if (token.compareTo(KTerm) < 0) return SMALLER;
+        String word;
+        String previousTerm = null;
 
-        int nextKthRowIndex = KthRowIndex + k;
-        int currStrPtr = currTermPtrValue + KTerm.length();
-        int currTermLength;
-        Row row;
-        for (int i = 1; i < k; i++) {
-            if (KthRowIndex + i >= table.size()){
-                return LARGER; // this case it does larger until runs out of tries
+        for (int offset = 0; offset < k; offset++) {
+            word = getWord(currKthRowIndex, currStrPtr, offset, previousTerm);
+            if (token.equals(word)) {
+                return offset;
             }
-            row = table.get(KthRowIndex + i);
-            String prefix = KTerm.substring(0, row.getPrefixSize());
-            if (i == k - 1) {
-                if (nextKthRowIndex >= table.size()){
-                    return LARGER; // this case it does larger until runs out of tries
-                }
-                int nextKthRowIndexTermPtrValue = ((SerializableKthRow) table.get(nextKthRowIndex)).getTermPtr();
-                currTermLength = nextKthRowIndexTermPtrValue - currStrPtr + row.getPrefixSize();
-            } else {
-                currTermLength = row.getLength();
+
+            if (offset == 0) {
+                currStrPtr += table.get(currKthRowIndex).getLength();
             }
-            int suffixLength = currTermLength - row.getPrefixSize();
-            String suffix = allTermString.substring(currStrPtr, currStrPtr + suffixLength);
-            if (token.equals(prefix + suffix)) {
-                return i;
+            if (offset < k - 1) {
+                currStrPtr += table.get(currKthRowIndex + offset).getLength()
+                            - table.get(currKthRowIndex + offset).getPrefixSize();
             }
-            currStrPtr += suffixLength;
+            previousTerm = word;
         }
         return LARGER;
     }
+
+    /**
+     * @param currStrPtr
+     * @param offset     between 1 and k-1
+     * @return
+     */
+    private String getWord(int currKthRowIndex, int currStrPtr, int offset, String previousTerm) {
+        Row row = table.get(currKthRowIndex + offset);
+
+        String prefix, suffix;
+        if (offset == 0) {
+            return allTermString.substring(currStrPtr, currStrPtr + row.getLength());
+        }
+
+        assert previousTerm != null;
+
+        int suffixSize = -1;
+        int prefSize = row.getPrefixSize();
+        prefix = previousTerm.substring(0, prefSize);
+
+        if (offset < k - 1) {
+            suffixSize = row.getLength() - prefSize;
+        }
+        if (offset == k - 1) {
+            Row nextRow = table.get(currKthRowIndex + k);
+            suffixSize = nextRow.getTermPtr() - currStrPtr + prefSize;
+        }
+
+        suffix = allTermString.substring(currStrPtr, currStrPtr + suffixSize);
+        return prefix + suffix;
+    }
+
+
 }

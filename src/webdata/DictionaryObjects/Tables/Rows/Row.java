@@ -6,4 +6,5 @@ public interface Row extends Serializable {
     String getCompressedBinaryStringPostingList();
     int getLength();
     int getPrefixSize();
+    int getTermPtr();
 }

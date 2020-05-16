@@ -23,5 +23,10 @@ public class SerializableLastRowInBlock implements Row {
     public int getPrefixSize() {
         return prefixSize;
     }
+
+    @Override
+    public int getTermPtr() {
+        return -1;
+    }
 }
 
