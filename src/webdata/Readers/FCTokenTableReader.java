@@ -45,7 +45,9 @@ public class FCTokenTableReader {
      * Returns 0 if there are no reviews containing this token
      */
     public int getTokenCollectionFrequency(String token) {
-        updateCurrPostingListAndFrequencies(token);
+        if(updateCurrPostingListAndFrequencies(token) == -1){
+            return 0;
+        }
         int totalFreq = 0;
         for (Integer freq : currFrequencies) {
             totalFreq += freq;
