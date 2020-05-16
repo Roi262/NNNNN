@@ -22,15 +22,11 @@ public class Main {
 
         buildIndex(indicesDir);
 
-//        queryMetaData(indicesDir);
-//        queryReviewMetaData(indicesDir);
 
-//        queryConcatDictTester(indicesDir);
-
-//        queryWordIndex(indicesDir);
-
+        queryMetaData(indicesDir);
+        queryReviewMetaData(indicesDir);
+        queryWordIndex(indicesDir);
         queryProductIndex(indicesDir);
-
         deleteIndex(indicesDir);
     }
 
@@ -50,7 +46,7 @@ public class Main {
 
     private static void queryReviewMetaData(String indicesDir) throws IOException, ClassNotFoundException {
         IndexReader indexReader = new IndexReader();
-        int[] ridsTestCases = {1, 11, 12, 0, 15, 35};
+        int[] ridsTestCases = {1, 11, 12, 15, 35};
 //        int[] ridsTestCases = {1, 11, 12, 999, 1001, 0, -2, 10, 32, 522};
         for (int rid : ridsTestCases) {
             System.out.println(

@@ -1,14 +1,11 @@
 package webdata;
 
 import webdata.DictionaryObjects.FeaturesDict;
-import webdata.DictionaryObjects.Tables.FCTable;
-import webdata.DictionaryObjects.Tables.FCTablePIDDict;
 import webdata.DictionaryObjects.Tables.Rows.Row;
 import webdata.Readers.FCTokenTableReader;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.DoubleSummaryStatistics;
 import java.util.Enumeration;
 
 import static webdata.Constants.Features.*;
@@ -21,12 +18,6 @@ public class IndexReader {
     /********dictionaries**********/
     private FeaturesDict featuresDict;
 
-
-//    private ArrayList<Row> PIDTable;
-//    private String compressedPIDStringDict;
-//
-//    private ArrayList<Row> TokenTable;
-//    private String compressedTokenStringDict;
 
     /********FCTable Readers**********/
     private FCTokenTableReader fcTokenTableReader;
@@ -103,16 +94,15 @@ public class IndexReader {
     }
 
 
-
-
     /**
      * Return the number of reviews containing a given token (i.e., word)
      * Returns 0 if there are no reviews containing this token
      */
     public int getTokenFrequency(String token) {
         int freq = fcTokenTableReader.getTokenFrequency(token);
-        if (freq == -1){
-            System.out.println("The word '" + token + "' is not in the database");
+        if (freq == -1) {
+//            System.out.println("The word '" + token + "' is not in the database");
+            return 0;
         }
         return freq;
     }

@@ -14,7 +14,6 @@ public class Constants {
         public static final int HELP_N = 1;
         public static final int HELP_D = 2;
         public static final int REVIEW_LEN = 3;
-
     }
 
     public static class IndexFilePaths {
@@ -44,12 +43,5 @@ public class Constants {
         public static final int SMALLER = -1;
         public static final int LARGER = -2;
     }
-
-    public enum RowType {
-        Kth_ROW,
-        MIDDLE,
-        LAST
-    }
-
 
 }

@@ -22,26 +22,10 @@ public class PIDPostingList implements PostingList {
         postingList.add(reviewID);
     }
 
-//    public void create(TreeSet<Integer> reviewIDs) {
-//        postingList.addAll(reviewIDs);
-//    }
 
     @Override
     public String getCompressedPostingList() {
         postingList = updatePostingListToGaps(postingList);
         return DeltaPostingListCompressor.compressList(postingList);
     }
-
-
-
-//    public static ArrayList<Integer> deGap(ArrayList<Integer> postingList) {
-////        ArrayList<Integer> degappedPL = new ArrayList<>();
-////        degappedPL.add(gappedPostingList.get(0));
-//        for (int i = 1; i < postingList.size(); i++) {
-//            postingList.add(postingList.get(i-1) + postingList.get(i));
-//        }
-//        return postingList;
-//    }
-
-
 }

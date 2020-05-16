@@ -46,7 +46,7 @@ public class FCTokenTableReader {
      * Returns 0 if there are no reviews containing this token
      */
     public int getTokenCollectionFrequency(String token) {
-        if(updateCurrPostingListAndFrequencies(token) == -1){
+        if (updateCurrPostingListAndFrequencies(token) == -1) {
             return 0;
         }
         int totalFreq = 0;
@@ -67,8 +67,9 @@ public class FCTokenTableReader {
      */
     public Enumeration<Integer> getReviewsWithToken(String token) {
         if (updateCurrPostingListAndFrequencies(token) == -1) {
+
             System.out.println("The word '" + token + "' is not in the database");
-            return null;
+            return Collections.emptyEnumeration();
         }
         return Collections.enumeration(mergedPList(currReviewIDs, currFrequencies));
     }
@@ -77,7 +78,8 @@ public class FCTokenTableReader {
         int rowInd = findRowIndex(productId);
         if (rowInd == -1) {
             System.out.println("The product ID '" + productId + "' is not in the database");
-            return null;
+            return Collections.emptyEnumeration();
+
         }
         Row row = table.get(rowInd);
         String compressedList = row.getCompressedBinaryStringPostingList();
@@ -86,9 +88,7 @@ public class FCTokenTableReader {
     }
 
 
-
-
-        private int updateCurrPostingListAndFrequencies(String token) {
+    private int updateCurrPostingListAndFrequencies(String token) {
         int rowInd = findRowIndex(token);
         if (rowInd == -1) return -1;
         Row row = table.get(rowInd);
@@ -148,7 +148,7 @@ public class FCTokenTableReader {
             currKthRow = (currKRowsLowerBound + currKRowsUpperBound) / 2;
             logLimit--;
         }
-        while (logLimit >=0);
+        while (logLimit >= 0);
         return -1;
     }
 
@@ -160,7 +160,7 @@ public class FCTokenTableReader {
         String previousTerm = null;
 
         word = getWord(currKthRowIndex, currStrPtr, 0, previousTerm);
-        if (token.compareTo(word) < 0){
+        if (token.compareTo(word) < 0) {
             return SMALLER;
         }
 
@@ -176,10 +176,9 @@ public class FCTokenTableReader {
 
             if (offset == 0) {
                 currStrPtr += table.get(currKthRowIndex).getLength();
-            }
-            else if (offset < k - 1) {
+            } else if (offset < k - 1) {
                 currStrPtr += table.get(currKthRowIndex + offset).getLength()
-                            - table.get(currKthRowIndex + offset).getPrefixSize();
+                        - table.get(currKthRowIndex + offset).getPrefixSize();
             }
             previousTerm = word;
         }
@@ -209,7 +208,7 @@ public class FCTokenTableReader {
             suffixSize = row.getLength() - prefSize;
         }
         if (offset == k - 1) {
-            int nextTermPtr = currKthRowIndex + k < table.size() ? table.get(currKthRowIndex + k).getTermPtr(): compressedAllTermStr.length() - 1;
+            int nextTermPtr = currKthRowIndex + k < table.size() ? table.get(currKthRowIndex + k).getTermPtr() : compressedAllTermStr.length() - 1;
             suffixSize = nextTermPtr - currStrPtr;
         }
 

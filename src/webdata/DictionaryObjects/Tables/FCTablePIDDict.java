@@ -4,9 +4,7 @@ import webdata.DictionaryObjects.Tables.PostingLists.PIDPostingList;
 import webdata.Review;
 
 
-
 public class FCTablePIDDict extends FCTable {
-
 
 
     /*****************CONSTRUCTOR*****************/
@@ -22,8 +20,5 @@ public class FCTablePIDDict extends FCTable {
         PIDPostingList.update(review.getReviewID());
         sortedDict.put(PID, PIDPostingList);
     }
-
-
-
 
 }

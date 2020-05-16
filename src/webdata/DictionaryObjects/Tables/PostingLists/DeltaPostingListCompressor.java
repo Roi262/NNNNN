@@ -30,12 +30,10 @@ public class DeltaPostingListCompressor {
         return decodedList;
     }
 
-    static Integer decodeOffset(int length, String encoding){
-        String binaryString = "1" + encoding.substring(0,length - 1);
+    static Integer decodeOffset(int length, String encoding) {
+        String binaryString = "1" + encoding.substring(0, length - 1);
         return Integer.parseInt(binaryString, 2);
     }
-
-
 
 
     /**
@@ -67,9 +65,9 @@ public class DeltaPostingListCompressor {
         return "1".repeat(Math.max(0, num - 1)) + "0";
     }
 
-    static int decodeUnary(String encoding){
+    static int decodeUnary(String encoding) {
         int i = 0;
-        while (encoding.charAt(i) != '0'){
+        while (encoding.charAt(i) != '0') {
             i++;
         }
         i++;

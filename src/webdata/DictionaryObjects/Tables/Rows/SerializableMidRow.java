@@ -23,6 +23,7 @@ public class SerializableMidRow implements Row {
     public int getLength() {
         return length;
     }
+
     @Override
     public int getPrefixSize() {
         return prefixSize;

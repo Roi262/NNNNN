@@ -8,19 +8,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class FCTableToken extends FCTable  {
-
-
+public class FCTableToken extends FCTable {
 
     /*****************CONSTRUCTOR*****************/
-    public FCTableToken(){
+    public FCTableToken() {
         super();
     }
-
 
     /**
      * Counts the occurrences of each token in the review.
      * Then, updates the posting list of the token.
+     *
      * @param review
      */
     @Override
@@ -44,6 +42,4 @@ public class FCTableToken extends FCTable  {
             sortedDict.put(token, tokenPostingList);
         }
     }
-
-
 }

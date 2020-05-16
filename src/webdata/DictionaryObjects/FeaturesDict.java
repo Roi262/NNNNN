@@ -1,6 +1,5 @@
 package webdata.DictionaryObjects;
 
-//import webdata.DeltaPostingListCompressor;
 
 import webdata.DictionaryObjects.Tables.PostingLists.DeltaPostingListCompressor;
 import webdata.Review;
@@ -27,6 +26,7 @@ public class FeaturesDict implements DictionaryObject, Serializable {
     /*****************CONSTRUCTOR*****************/
     public FeaturesDict() {
         this.compressedFeaturesDict = new ArrayList<>();
+        this.compressedFeaturesDict.add(null);
     }
 
 
@@ -51,13 +51,20 @@ public class FeaturesDict implements DictionaryObject, Serializable {
     /*****************READER FUNCTIONS****************/
 
     public String getProductID(int reviewID) {
+        if ((reviewID <= 0) || (reviewID >= compressedFeaturesDict.size())){
+            return null;
+        }
+
         String value = compressedFeaturesDict.get(reviewID);
         return splitOnSeparator(value)[0];
     }
 
 
     public int getValue(int reviewID, int type) {
-        assert type == SCORE || type == HELP_D || type == HELP_N || type == REVIEW_LEN;
+        if ((reviewID <= 0) || (reviewID >= compressedFeaturesDict.size())){
+            return -1;
+        }
+        assert type == SCORE || type == HELP_N || type == HELP_D || type == REVIEW_LEN;
         String value = compressedFeaturesDict.get(reviewID);
         String binaryString = splitOnSeparator(value)[1];
         ArrayList<Integer> values = DeltaPostingListCompressor.deltaDecode(binaryString);

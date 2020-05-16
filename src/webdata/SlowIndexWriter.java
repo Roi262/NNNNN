@@ -46,7 +46,6 @@ public class SlowIndexWriter {
      */
     public void slowWrite(String inputFile, String dir) throws Exception {
         this.dir = dir;
-//        Constants.IndexFilePaths.initializeIndexFilePaths(dir);
         createDirectory();
         readIntoMainMem(inputFile);
 
@@ -99,7 +98,7 @@ public class SlowIndexWriter {
 
             reviewID++;
         }
-        totalCounts.setTotalNumOfReviews(reviewID);
+        totalCounts.setTotalNumOfReviews(reviewID - 1);
     }
 
     private Review readNextReview(int reviewID) throws IOException {
@@ -109,7 +108,7 @@ public class SlowIndexWriter {
         if (line == null) return null;
 
         while (!line.equals("")) {
-            if (!unnecessaryValue(line)){
+            if (!unnecessaryValue(line)) {
                 reviewLines.add(line);
             }
 
@@ -117,7 +116,7 @@ public class SlowIndexWriter {
 
             if (line == null) break;
         }
-        if (reviewLines.isEmpty()){
+        if (reviewLines.isEmpty()) {
             return null;
         }
         return new Review(reviewID, reviewLines);
@@ -159,10 +158,6 @@ public class SlowIndexWriter {
 
         Serializer.WriteObjectToFile(
                 fcTableTokenDict.getCompressedStringDict(), dir + COMPRESSED_TOKEN_DICT_STRING_PATH);
-
-
-        int k = 0;
-
     }
 
 
@@ -172,7 +167,7 @@ public class SlowIndexWriter {
     public void removeIndex(String dir) {
         File fileDir = new File(dir);
         File[] files = (fileDir).listFiles();
-        if(files != null) {
+        if (files != null) {
             for (final File file : files) {
                 file.delete();
             }

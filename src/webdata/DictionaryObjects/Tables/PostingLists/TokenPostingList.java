@@ -9,7 +9,8 @@ public class TokenPostingList implements PostingList {
      */
     private ArrayList<Integer> postingList;
 
-    /** The respective list of frequencies to the posting list,
+    /**
+     * The respective list of frequencies to the posting list,
      * i.e., a list of the number of appearances of the token this list refers
      * to in the review id that is equal to the index of the item in the list.
      */
@@ -20,18 +21,17 @@ public class TokenPostingList implements PostingList {
         this.frequencyList = new ArrayList<>();
     }
 
-    public void update(Integer reviewID, int freq){
+    public void update(Integer reviewID, int freq) {
         postingList.add(reviewID);
         frequencyList.add(freq);
     }
 
     /**
-     *
      * @return the delta compressed posting list with frequencies.
      * Overrides the method from Parent class, because parent doesn't deal with frequencies
      */
     @Override
-    public String getCompressedPostingList(){
+    public String getCompressedPostingList() {
         postingList = updatePostingListToGaps(postingList);
         ArrayList<Integer> postingListWithFrequencies = postingList;
         postingListWithFrequencies.addAll(frequencyList);
@@ -41,6 +41,7 @@ public class TokenPostingList implements PostingList {
     /**
      * calculate frequency by counting all values of odd indeces in the posting list
      * TODO note - i think this is just for reading
+     *
      * @return
      */
     public static int getFreq(ArrayList<Integer> frequencyList) {

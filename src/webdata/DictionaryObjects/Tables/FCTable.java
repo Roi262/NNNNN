@@ -1,7 +1,6 @@
 package webdata.DictionaryObjects.Tables;
 
 import webdata.DictionaryObjects.DictionaryObject;
-import webdata.DictionaryObjects.Tables.PostingLists.PIDPostingList;
 import webdata.DictionaryObjects.Tables.PostingLists.PostingList;
 import webdata.DictionaryObjects.Tables.Rows.Row;
 import webdata.DictionaryObjects.Tables.Rows.SerializableKthRow;
@@ -79,8 +78,6 @@ public abstract class FCTable implements DictionaryObject {
         }
         compressedStringDict = concatStrBuilder.toString();
     }
-
-
 
 
     /**
