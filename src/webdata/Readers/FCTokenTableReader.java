@@ -63,6 +63,9 @@ public class FCTokenTableReader {
      * Returns an empty Enumeration if there are no reviews containing this token
      */
     public Enumeration<Integer> getReviewsWithToken(String token) {
+        if (token.equals("the")){
+            int i = 0;
+        }
         if (updateCurrPostingListAndFrequencies(token) == -1) {
             System.out.println("The word '" + token + "' is not in the database");
             return null;
@@ -112,12 +115,16 @@ public class FCTokenTableReader {
 
         int numOfRowsWithTermPointers = (table.size() + k - 1) / k;
         int currKthRow = (numOfRowsWithTermPointers / 2) - 1; // the i'th term pointer
-        int logLimit = (int) Math.log(numOfRowsWithTermPointers) + 1;
+//        int logLimit = (int) Math.log(numOfRowsWithTermPointers) + 10;
+        int logLimit = (int) (Math.log(numOfRowsWithTermPointers) / Math.log(2)) + 1; //to get log in base 2
         int currKRowsLowerBound = 0;
         int currKRowsUpperBound = numOfRowsWithTermPointers;
 
         do {
             currKthRowIndex = currKthRow * k;
+            if (token.equals("the")){
+                int i = 9;
+            }
             int offset = getOffsetInBlock(currKthRowIndex, token);
             if (offset >= 0) {
                 return currKthRowIndex + offset;
@@ -130,7 +137,8 @@ public class FCTokenTableReader {
             currKthRow = (currKRowsLowerBound + currKRowsUpperBound) / 2;
             logLimit--;
         }
-        while (logLimit >= 0);
+        while (logLimit >=0);
+//        while (currKRowsLowerBound != currKRowsUpperBound);
         return -1;
     }
 
@@ -138,12 +146,14 @@ public class FCTokenTableReader {
     private int getOffsetInBlock(int currKthRowIndex, String token) {
         int currStrPtr = table.get(currKthRowIndex).getTermPtr();
 
-        if (token.compareTo(getWord(currKthRowIndex, currStrPtr, 0, null)) < 0){
+        String word;
+        String previousTerm = null;
+
+        word = getWord(currKthRowIndex, currStrPtr, 0, previousTerm);
+        if (token.compareTo(word) < 0){
             return SMALLER;
         }
 
-        String word;
-        String previousTerm = null;
 
         for (int offset = 0; offset < k; offset++) {
             word = getWord(currKthRowIndex, currStrPtr, offset, previousTerm);

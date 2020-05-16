@@ -37,8 +37,8 @@ public class Main {
 
     private static void buildIndex(String indicesDir) throws Exception {
         SlowIndexWriter slowIndexWriter = new SlowIndexWriter();
-        slowIndexWriter.slowWrite(REVIEWS_FILE_NAME_1, indicesDir);
-//        slowIndexWriter.slowWrite(REVIEWS_FILE_NAME_1000, indicesDir);
+//        slowIndexWriter.slowWrite(REVIEWS_FILE_NAME_1, indicesDir);
+        slowIndexWriter.slowWrite(REVIEWS_FILE_NAME_100, indicesDir);
     }
 
 //    private static void queryConcatDictTester(String indicesDir) throws IOException, ClassNotFoundException {
@@ -74,9 +74,9 @@ public class Main {
 
     private static void queryWordIndex(String indicesDir) throws IOException, ClassNotFoundException {
         IndexReader indexReader = new IndexReader();
-        String[] wordTestCases = {"0", "jezer", "roi"};
-//        String[] wordTestCases = {"0", "bulba", "zzz", "1", "9oz", "a", "crunchy", "how", "laxative",
-//                "prefer", "storebought", "zucchini", "the"};
+//        String[] wordTestCases = {"0", "jezer", "roi", "peter"};
+        String[] wordTestCases = {"0", "bulba", "zzz", "1", "9oz", "a", "crunchy", "how", "laxative",
+                "prefer", "storebought", "zucchini", "the"};
         testGetReviewsWithToken(indexReader, wordTestCases);
 
         testGetTokenFrequency(indexReader, wordTestCases);
@@ -91,6 +91,7 @@ public class Main {
                                                 String[] wordTestCases) {
         System.out.println("Checking getReviewsWithToken...");
         for (String word : wordTestCases) {
+
             Enumeration<Integer> res = indexReader.getReviewsWithToken(word);
             if (res == null) continue;
             System.out.print(word + ": " + System.lineSeparator());
