@@ -1,15 +1,10 @@
 package webdata.Readers;
 
 import webdata.DictionaryObjects.Tables.Rows.Row;
-import webdata.DictionaryObjects.Tables.Rows.*;
 
-import javax.sound.midi.MidiFileFormat;
-import javax.swing.text.StyleContext;
-import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.NoSuchElementException;
 
 import static webdata.Constants.BinarySearchConstants.LARGER;
 import static webdata.Constants.BinarySearchConstants.SMALLER;
@@ -18,14 +13,14 @@ import static webdata.DictionaryObjects.Tables.PostingLists.DeltaPostingListComp
 
 public class FCTokenTableReader {
     private final ArrayList<Row> table;
-    private final String allTermString;
+    private final String compressedAllTermStr;
 
     ArrayList<Integer> currReviewIDs;
     ArrayList<Integer> currFrequencies;
 
-    public FCTokenTableReader(ArrayList<Row> table, String allTermString) {
+    public FCTokenTableReader(ArrayList<Row> table, String compressedAllTermStr) {
         this.table = table;
-        this.allTermString = allTermString;
+        this.compressedAllTermStr = compressedAllTermStr;
     }
 
     /**
@@ -159,7 +154,7 @@ public class FCTokenTableReader {
             if (offset == 0) {
                 currStrPtr += table.get(currKthRowIndex).getLength();
             }
-            if (offset < k - 1) {
+            else if (offset < k - 1) {
                 currStrPtr += table.get(currKthRowIndex + offset).getLength()
                             - table.get(currKthRowIndex + offset).getPrefixSize();
             }
@@ -178,7 +173,7 @@ public class FCTokenTableReader {
 
         String prefix, suffix;
         if (offset == 0) {
-            return allTermString.substring(currStrPtr, currStrPtr + row.getLength());
+            return compressedAllTermStr.substring(currStrPtr, currStrPtr + row.getLength());
         }
 
         assert previousTerm != null;
@@ -191,13 +186,11 @@ public class FCTokenTableReader {
             suffixSize = row.getLength() - prefSize;
         }
         if (offset == k - 1) {
-            Row nextRow = table.get(currKthRowIndex + k);
-            suffixSize = nextRow.getTermPtr() - currStrPtr + prefSize;
+            int nextTermPtr = currKthRowIndex + k < table.size() ? table.get(currKthRowIndex + k).getTermPtr(): compressedAllTermStr.length() - 1;
+            suffixSize = nextTermPtr - currStrPtr;
         }
 
-        suffix = allTermString.substring(currStrPtr, currStrPtr + suffixSize);
+        suffix = compressedAllTermStr.substring(currStrPtr, currStrPtr + suffixSize);
         return prefix + suffix;
     }
-
-
 }
