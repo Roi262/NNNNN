@@ -37,7 +37,7 @@ public class Main {
 
     private static void buildIndex(String indicesDir) throws Exception {
         SlowIndexWriter slowIndexWriter = new SlowIndexWriter();
-        slowIndexWriter.slowWrite(REVIEWS_FILE_NAME_100, indicesDir);
+        slowIndexWriter.slowWrite(REVIEWS_FILE_NAME_1000, indicesDir);
     }
 
 

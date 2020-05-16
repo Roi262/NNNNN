@@ -81,7 +81,7 @@ public class FCTokenTableReader {
         }
         Row row = table.get(rowInd);
         String compressedList = row.getCompressedBinaryStringPostingList();
-        ArrayList<Integer> pList = deltaDecode(compressedList);
+        ArrayList<Integer> pList = resetValuesFromGaps(deltaDecode(compressedList));
         return Collections.enumeration(pList);
     }
 
