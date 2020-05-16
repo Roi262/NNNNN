@@ -78,7 +78,7 @@ public class Main {
         String[] wordTestCases = {"0", "bulba", "zzz", "1", "9oz", "a", "crunchy", "how", "laxative",
                 "prefer", "storebought", "zucchini", "the"};
         testGetReviewsWithToken(indexReader, wordTestCases);
-
+//ii
         testGetTokenFrequency(indexReader, wordTestCases);
         testGetTokenCollectionFrequency(indexReader, wordTestCases);
 
