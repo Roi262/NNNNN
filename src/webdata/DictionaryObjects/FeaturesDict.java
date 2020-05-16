@@ -60,6 +60,11 @@ public class FeaturesDict implements DictionaryObject, Serializable {
     }
 
 
+    /**
+     * @param reviewID
+     * @param type
+     * @return value of given type and review ID, for example, the score value of ID 1
+     */
     public int getValue(int reviewID, int type) {
         if ((reviewID <= 0) || (reviewID >= compressedFeaturesDict.size())){
             return -1;

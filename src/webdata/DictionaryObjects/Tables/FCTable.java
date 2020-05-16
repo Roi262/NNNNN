@@ -43,6 +43,9 @@ public abstract class FCTable implements DictionaryObject {
     /***********************************************/
 
 
+    /**
+     * Compress and create the object
+     */
     public void compressAndCreate() {
         int currIndex = 0;
         int prefixSize;

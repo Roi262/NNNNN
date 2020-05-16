@@ -101,7 +101,6 @@ public class IndexReader {
     public int getTokenFrequency(String token) {
         int freq = fcTokenTableReader.getTokenFrequency(token);
         if (freq == -1) {
-//            System.out.println("The word '" + token + "' is not in the database");
             return 0;
         }
         return freq;

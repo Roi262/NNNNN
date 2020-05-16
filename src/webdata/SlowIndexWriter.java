@@ -101,6 +101,12 @@ public class SlowIndexWriter {
         totalCounts.setTotalNumOfReviews(reviewID - 1);
     }
 
+    /**
+     * reads review lines into review object.
+     * @param reviewID
+     * @return a new review object
+     * @throws IOException
+     */
     private Review readNextReview(int reviewID) throws IOException {
         ArrayList<String> reviewLines = new ArrayList<>();
 
@@ -138,6 +144,10 @@ public class SlowIndexWriter {
     }
 
 
+    /**
+     * Serializes objects to the disk
+     * @throws Exception
+     */
     private void serializeToDisk() throws Exception {
 //        serialize tc
         Serializer.WriteObjectToFile(totalCounts, dir + TOTAL_COUNTS_PATHS);

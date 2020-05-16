@@ -65,6 +65,9 @@ public class Review {
 
     /******************************************/
 
+    /**
+     * Parses the text of a complete review into the class variables
+     */
     private void parseReviewStr() {
         for (String line : reviewLines) {
             if (line.startsWith(PROD_ID_PREFIX)) {

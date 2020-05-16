@@ -30,8 +30,7 @@ public class FCTokenTableReader {
      */
     public int getTokenFrequency(String token) {
         int rowInd = findRowIndex(token);
-        if (rowInd == -1) {
-            System.out.println("The word '" + token + "' is not in the database");
+        if (rowInd == -1) { // token not found
             return 0;
         }
         Row row = table.get(rowInd);
@@ -46,7 +45,7 @@ public class FCTokenTableReader {
      * Returns 0 if there are no reviews containing this token
      */
     public int getTokenCollectionFrequency(String token) {
-        if (updateCurrPostingListAndFrequencies(token) == -1) {
+        if (updateCurrPostingListAndFrequencies(token) == -1) { // token not found
             return 0;
         }
         int totalFreq = 0;
@@ -68,7 +67,7 @@ public class FCTokenTableReader {
     public Enumeration<Integer> getReviewsWithToken(String token) {
         if (updateCurrPostingListAndFrequencies(token) == -1) {
 
-            System.out.println("The word '" + token + "' is not in the database");
+//            System.out.println("The word '" + token + "' is not in the database");
             return Collections.emptyEnumeration();
         }
         return Collections.enumeration(mergedPList(currReviewIDs, currFrequencies));
@@ -77,9 +76,8 @@ public class FCTokenTableReader {
     public Enumeration<Integer> getProductReviews(String productId) throws IOException, ClassNotFoundException, NullPointerException {
         int rowInd = findRowIndex(productId);
         if (rowInd == -1) {
-            System.out.println("The product ID '" + productId + "' is not in the database");
+//            System.out.println("The product ID '" + productId + "' is not in the database");
             return Collections.emptyEnumeration();
-
         }
         Row row = table.get(rowInd);
         String compressedList = row.getCompressedBinaryStringPostingList();
@@ -110,6 +108,11 @@ public class FCTokenTableReader {
         return pList;
     }
 
+    /**
+     * @param reviewIDs
+     * @param frequencies
+     * @return merged posting list of ids and their frequencies.
+     */
     private ArrayList<Integer> mergedPList(ArrayList<Integer> reviewIDs, ArrayList<Integer> frequencies) {
         assert reviewIDs.size() == frequencies.size();
         ArrayList<Integer> mergedPList = new ArrayList<>();
@@ -153,6 +156,12 @@ public class FCTokenTableReader {
     }
 
 
+    /**
+     * @param currKthRowIndex
+     * @param token
+     * @return offset of word in block if the token is in the block,
+     * SMALLER/LARGER if word is lexicographically smaller/larger then all words in the block
+     */
     private int getOffsetInBlock(int currKthRowIndex, String token) {
         int currStrPtr = table.get(currKthRowIndex).getTermPtr();
 
@@ -186,9 +195,9 @@ public class FCTokenTableReader {
     }
 
     /**
-     * @param currStrPtr
+     * @param currStrPtr current pointer in the long compressed string
      * @param offset     between 1 and k-1
-     * @return
+     * @return the word in the kth row + offset row
      */
     private String getWord(int currKthRowIndex, int currStrPtr, int offset, String previousTerm) {
         Row row = table.get(currKthRowIndex + offset);

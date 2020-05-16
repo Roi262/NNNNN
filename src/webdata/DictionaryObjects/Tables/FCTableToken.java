@@ -18,7 +18,6 @@ public class FCTableToken extends FCTable {
     /**
      * Counts the occurrences of each token in the review.
      * Then, updates the posting list of the token.
-     *
      * @param review
      */
     @Override
