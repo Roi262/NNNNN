@@ -1,8 +1,11 @@
 package webdata;
 
 
+import com.sun.nio.sctp.AbstractNotificationHandler;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static webdata.Constants.PrefixConstants.*;
@@ -82,16 +85,18 @@ public class Review {
                 score = handleScore(line);
 
             } else if (line.startsWith(TEXT_PREFIX)) {
-                textTokens = new ArrayList<>(handleText(line));
+                textTokens = handleText(line);
             }
         }
     }
 
-    private List<String> handleText(String line) {
+    private ArrayList<String> handleText(String line) {
         line = line.replace(TEXT_PREFIX, "");
         line = line.replaceAll("\\W", " ");
         line = line.toLowerCase();
-        return Arrays.asList(line.split(" "));
+        ArrayList<String> tokens = new ArrayList<>(Arrays.asList(line.split(" ")));
+        tokens.removeAll(Arrays.asList(""));
+        return tokens;
     }
 
     private Integer handleScore(String line) {

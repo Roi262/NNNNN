@@ -27,7 +27,7 @@ public class Main {
         queryReviewMetaData(indicesDir);
         queryWordIndex(indicesDir);
         queryProductIndex(indicesDir);
-//        deleteIndex(indicesDir);
+        deleteIndex(indicesDir);
     }
 
 
@@ -38,14 +38,14 @@ public class Main {
 
 
     private static void queryMetaData(String indicesDir) throws IOException, ClassNotFoundException {
-        IndexReader indexReader = new IndexReader();
+        IndexReader indexReader = new IndexReader(indicesDir);
         System.out.println(indexReader.getNumberOfReviews());
         System.out.println(indexReader.getTokenSizeOfReviews());
     }
 
 
     private static void queryReviewMetaData(String indicesDir) throws IOException, ClassNotFoundException {
-        IndexReader indexReader = new IndexReader();
+        IndexReader indexReader = new IndexReader(indicesDir);
         int[] ridsTestCases = {1, 11, 12, 15, 35};
 //        int[] ridsTestCases = {1, 11, 12, 999, 1001, 0, -2, 10, 32, 522};
         for (int rid : ridsTestCases) {
@@ -61,7 +61,7 @@ public class Main {
 
 
     private static void queryWordIndex(String indicesDir) throws IOException, ClassNotFoundException {
-        IndexReader indexReader = new IndexReader();
+        IndexReader indexReader = new IndexReader(indicesDir);
 //        String[] wordTestCases = {"0", "jezer", "roi", "peter"};
         String[] wordTestCases = {"0", "bulba", "zzz", "1", "9oz", "a", "crunchy", "how", "laxative",
                 "prefer", "storebought", "zucchini", "the"};
@@ -108,7 +108,7 @@ public class Main {
 
 
     private static void queryProductIndex(String indicesDir) throws IOException, ClassNotFoundException, NullPointerException {
-        IndexReader indexReader = new IndexReader();
+        IndexReader indexReader = new IndexReader(indicesDir);
         String[] productTestCases = {"A009ASDF5", "B099ASDF5", "B0001PB9FE", "B0002567IW", "B000ER6YO0",
                 "B000G6RYNE", "B006F2NYI2", "B009HINRX8", "B001E4KFG0"};
         for (String pid : productTestCases) {
