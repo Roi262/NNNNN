@@ -27,7 +27,7 @@ public class Main {
         queryReviewMetaData(indicesDir);
         queryWordIndex(indicesDir);
         queryProductIndex(indicesDir);
-        deleteIndex(indicesDir);
+//        deleteIndex(indicesDir);
     }
 
 

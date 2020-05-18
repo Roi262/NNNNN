@@ -31,6 +31,12 @@ public class FeaturesDict implements DictionaryObject, Serializable {
 
 
     /*****************UPDATE*****************/
+
+    /**
+     * Obtains the values of the review, and compresses
+     * them into one delta encoded string
+     * @param review
+     */
     @Override
     public void update(Review review) {
         ArrayList<Integer> values = new ArrayList<>(

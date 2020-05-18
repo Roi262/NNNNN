@@ -17,7 +17,7 @@ public class SlowIndexWriter {
 
 
     /****************** File reading objects ******************/
-    public static String dir;
+    private String dir;
     private File dataFile;
     private BufferedReader reader;
 
@@ -44,13 +44,16 @@ public class SlowIndexWriter {
      * dir is the directory in which all index files will be created
      * if the directory does not exist, it should be created
      */
-    public void slowWrite(String inputFile, String dir) throws Exception {
+    public void slowWrite(String inputFile, String dir)  {
         this.dir = dir;
         createDirectory();
-        readIntoMainMem(inputFile);
-
-        compressAndCreateTables();
-        serializeToDisk();
+        try {
+            readIntoMainMem(inputFile);
+            compressAndCreateTables();
+            serializeToDisk();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

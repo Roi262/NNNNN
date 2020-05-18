@@ -6,14 +6,17 @@ import webdata.Readers.FCTokenTableReader;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 
 import static webdata.Constants.Features.*;
 import static webdata.Constants.IndexFilePaths.*;
 import static webdata.Serializer.ReadObjectFromFile;
-import static webdata.SlowIndexWriter.dir;
+//import static webdata.SlowIndexWriter.dir;
 
 public class IndexReader {
+
+    private String dir;
 
     /********dictionaries**********/
     private FeaturesDict featuresDict;
@@ -27,10 +30,15 @@ public class IndexReader {
 
 
     /*****************CONSTRUCTOR*****************/
-    public IndexReader() throws IOException, ClassNotFoundException {
-        this.featuresDict = (FeaturesDict) ReadObjectFromFile(dir + FEATURES_DICT_PATH);
-        this.tc = (TotalCounts) ReadObjectFromFile(dir + TOTAL_COUNTS_PATHS);
-        initializeFCTokenTableReader();
+    public IndexReader(String dir) {
+        this.dir = dir;
+        try {
+            this.featuresDict = (FeaturesDict) ReadObjectFromFile(dir + FEATURES_DICT_PATH);
+            this.tc = (TotalCounts) ReadObjectFromFile(dir + TOTAL_COUNTS_PATHS);
+            initializeFCTokenTableReader();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initializeFCTokenTableReader() throws IOException, ClassNotFoundException {
@@ -132,10 +140,16 @@ public class IndexReader {
      * Note that the integers returned should be sorted by id
      * Returns an empty Enumeration if there are no reviews for this product
      */
-    public Enumeration<Integer> getProductReviews(String productId) throws IOException, ClassNotFoundException, NullPointerException {
-        ArrayList<Row> table = (ArrayList<Row>) ReadObjectFromFile(dir + SERIALIZABLE_PROD_ID_TABLE_PATH);
-        String allTermString = (String) ReadObjectFromFile(dir + COMPRESSED_PROD_ID_DICT_STRING_PATH);
-        FCTokenTableReader fcProdIDtableReader = new FCTokenTableReader(table, allTermString);
-        return fcProdIDtableReader.getProductReviews(productId);
+    public Enumeration<Integer> getProductReviews(String productId) {
+        ArrayList<Row> table = null;
+        try {
+            table = (ArrayList<Row>) ReadObjectFromFile(dir + SERIALIZABLE_PROD_ID_TABLE_PATH);
+            String allTermString = (String) ReadObjectFromFile(dir + COMPRESSED_PROD_ID_DICT_STRING_PATH);
+            FCTokenTableReader fcProdIDtableReader = new FCTokenTableReader(table, allTermString);
+            return fcProdIDtableReader.getProductReviews(productId);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyEnumeration();
     }
 }

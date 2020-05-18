@@ -2,8 +2,6 @@ package webdata;
 
 import java.io.*;
 
-import static webdata.SlowIndexWriter.dir;
-
 
 public class Serializer {
 
